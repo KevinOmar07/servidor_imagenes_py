@@ -1,42 +1,32 @@
-import platform, asyncio, pymysql, os, cloudinary
+import platform, asyncio, os
+from flask import Flask
 from os import remove
-import cloudinary.uploader
-import cloudinary.api
 from fileinput import filename
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from flask import Flask
+
+import conexionBD
+import CloudDinary
+
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = "./images"
+app.config['UPLOAD_FOLDER'] = "servidor_imagenes_py\images"
 
+cloudinary = CloudDinary.cloudinary
 
-host = "bxwuncwod1yxvwwned5s-mysql.services.clever-cloud.com"
-DB = "bxwuncwod1yxvwwned5s"
-userDB = "ujo5pftfpvqiwoqw"
-passDB = "OTNfrdZFDJEVuHqeGajm"
-
-cloudinary.config( 
-  cloud_name = "drmqmmxnh", 
-  api_key = "642666492921457", 
-  api_secret = "e2HiwwQr_IhUttqWi6_wEGo02OU"
-)
-
-
-async def add_img_bd(files, idUser):
-    conexion = pymysql.connect(host=host, user=userDB, passwd=passDB, db=DB)
+async def add_img_bd(files, idUser):    
+    conexion = conexionBD.DBConnection().conexion
     try:        
-        with conexion.cursor() as cursor:            
+        with conexion.cursor() as cursor:                        
             consulta = "INSERT INTO imagenes(nombreImage, ruta, idUser) VALUES (%s, %s, %s);"            
-            for file in files:                
-                filename = str(datetime.today().strftime('%Y %H_%M_%S_')) + secure_filename(file.filename)  # filename guarda el nombre de la imagen                
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))                
-                res = cloudinary.uploader.upload("./images/" + filename)                
+            for file in files:  
+                filename = str(datetime.today().strftime('%Y %H_%M_%S_')) + secure_filename(file.filename)
+                file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                res = cloudinary.uploader.upload("servidor_imagenes_py\images/" + filename)
                 cursor.execute(consulta, (filename, res['url'], idUser))                
-                remove("./images/" + filename)                
-                
+                remove("servidor_imagenes_py\images/" + filename)                                
             conexion.commit()
-    finally:
-        print("Proceso terminado")
+    finally:        
         conexion.close()
     return "guardado"
 
@@ -54,8 +44,8 @@ def setImagenes(files, idU):
 
 
 def obtenerURL(id):
-    imagenes = []
-    conexion = pymysql.connect(host=host, user=userDB, passwd=passDB, db=DB)
+    imagenes = []    
+    conexion = conexionBD.DBConnection().conexion
     try:
         with conexion.cursor() as cursor:
             consulta = "SELECT nombreImage, ruta FROM imagenes where idUser=%s;"
