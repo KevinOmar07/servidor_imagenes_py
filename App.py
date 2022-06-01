@@ -16,7 +16,7 @@ from os import remove
 import threading
 import asyncio
 import platform
-
+import Usuarios
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -27,6 +27,7 @@ host = "bxwuncwod1yxvwwned5s-mysql.services.clever-cloud.com"
 DB = "bxwuncwod1yxvwwned5s"
 userDB = "ujo5pftfpvqiwoqw"
 passDB = "OTNfrdZFDJEVuHqeGajm"
+
 
 
 @app.route('/')
@@ -47,8 +48,9 @@ def singin():
         data = json.loads(request.data)
         user = data['data']['user']
         password = data['data']['password']
-
-        conexion = pymysql.connect( host=host, user= userDB, passwd=passDB, db=DB )
+        respuesta = Usuarios.signIn(user, password)
+        
+        ''' conexion = pymysql.connect( host=host, user= userDB, passwd=passDB, db=DB )
         estado = ""
         try:
             with conexion.cursor() as cursor:
@@ -64,9 +66,9 @@ def singin():
                 else :
                     estado = {"status": 'Error de inicio', "id": ""}           
         finally:
-            conexion.close()                    
+            conexion.close() '''        
 
-        return estado   
+        return respuesta
 
 
 @app.route('/singup', methods=['POST'])
@@ -75,10 +77,12 @@ def signup():
         data = json.loads(request.data)
         user = data['data']['user']
         password = data['data']['password']
+        
+        respuesta = Usuarios.signUp(user, password)
 
-        conexion = pymysql.connect( host=host, user= userDB, passwd=passDB, db=DB )
-
+        ''' conexion = pymysql.connect( host=host, user= userDB, passwd=passDB, db=DB )
         mensaje = ""
+        
         with conexion.cursor() as cursor:
                 consulta = "SELECT nombre FROM usuarios where nombre=%s;"
                 cursor.execute(consulta, (user))
@@ -94,9 +98,9 @@ def signup():
                 else:
                     mensaje = "Usuario ya existe, tal vez es tu clon malvado"
                 
-                conexion.close()
+                conexion.close() '''
 
-        return mensaje
+        return respuesta
 
 async def add_img_bd(file, idU):
         files = file
@@ -156,8 +160,6 @@ def add_image2():
     print("Termina Hilo")
     return "Imagenes Guardadas"   
 
-
-
 @app.route('/get_Images', methods=['GET'])  #enviara la url de las imagenes al front
 def get_iamge():
         # id = 2
@@ -183,7 +185,6 @@ def get_iamge():
 
         return json.dumps(['imagenes', imagenes])
     
-
 
 if __name__ == '__main__':
     app.run(port = 3001, debug = True)
