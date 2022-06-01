@@ -17,7 +17,7 @@ import threading
 import asyncio
 import platform
 import Usuarios
-
+import  Imagenes
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -102,7 +102,7 @@ def signup():
 
         return respuesta
 
-async def add_img_bd(file, idU):
+'''async def add_img_bd(file, idU):
         files = file
         idUser = idU        
 
@@ -143,17 +143,16 @@ def setImagenes(files, idU):
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(add_img_recibe(files, idU))
 
-    return "ok aync complet"
+    return "ok aync complet" '''
 
 # recibe la imagen directo del formulario
 @app.route('/set_image2',methods=['POST'])         # recibe el arreglo, pero guarda solo el primero
 def add_image2():
     files = request.files.getlist('files')
     id = request.args.get('id')
-
     if request.method == "POST":
         print("Incicia Hilo")
-        hilo = threading.Thread(target=setImagenes, args=(files,id,))
+        hilo = threading.Thread(target=Imagenes.setImagenes, args=(files,id,))
         hilo.start()
         hilo.join()
 
@@ -164,7 +163,7 @@ def add_image2():
 def get_iamge():
         # id = 2
         id = request.args.get('id')
-        imagenes=[]
+        '''imagenes=[]
         # data = json.loads(request.data)
         # id = data['data']['idUsuario']
 
@@ -181,9 +180,10 @@ def get_iamge():
                     imagenes.append(img[1])
 
         finally:
-            conexion.close()
+            conexion.close()'''
 
-        return json.dumps(['imagenes', imagenes])
+        return json.dumps(['imagenes', Imagenes.obtenerURL(id)
+])
     
 
 if __name__ == '__main__':
