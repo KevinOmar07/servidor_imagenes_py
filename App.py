@@ -1,4 +1,4 @@
-import base64
+""" import base64
 from fileinput import filename
 import os
 from distutils.log import debug
@@ -188,3 +188,5 @@ def get_iamge():
 
 if __name__ == '__main__':
     app.run(port = 3001, debug = True)
+
+ """

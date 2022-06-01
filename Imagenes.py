@@ -15,19 +15,25 @@ DB = "bxwuncwod1yxvwwned5s"
 userDB = "ujo5pftfpvqiwoqw"
 passDB = "OTNfrdZFDJEVuHqeGajm"
 
+cloudinary.config( 
+  cloud_name = "drmqmmxnh", 
+  api_key = "642666492921457", 
+  api_secret = "e2HiwwQr_IhUttqWi6_wEGo02OU"
+)
+
 
 async def add_img_bd(files, idUser):
     conexion = pymysql.connect(host=host, user=userDB, passwd=passDB, db=DB)
-    try:
-        with conexion.cursor() as cursor:
-            consulta = "INSERT INTO imagenes(nombreImage, ruta, idUser) VALUES (%s, %s, %s);"
-            for file in files:
-                filename = str(datetime.today().strftime('%Y %H_%M_%S_')) + secure_filename(
-                    file.filename)  # filename guarda el nombre de la imagen
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                res = cloudinary.uploader.upload("./images/" + filename)
-                cursor.execute(consulta, (filename, res['url'], idUser))
-                remove("./images/" + filename)
+    try:        
+        with conexion.cursor() as cursor:            
+            consulta = "INSERT INTO imagenes(nombreImage, ruta, idUser) VALUES (%s, %s, %s);"            
+            for file in files:                
+                filename = str(datetime.today().strftime('%Y %H_%M_%S_')) + secure_filename(file.filename)  # filename guarda el nombre de la imagen                
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))                
+                res = cloudinary.uploader.upload("./images/" + filename)                
+                cursor.execute(consulta, (filename, res['url'], idUser))                
+                remove("./images/" + filename)                
+                
             conexion.commit()
     finally:
         print("Proceso terminado")
@@ -35,15 +41,12 @@ async def add_img_bd(files, idUser):
     return "guardado"
 
 
-async def add_img_recibe(files, idU):
-    print("Inicia el await")
-    await add_img_bd(files, idU)
-    print("Entra a await")
+async def add_img_recibe(files, idU):    
+    await add_img_bd(files, idU)    
     return "ok img complet"
 
 
-def setImagenes(files, idU):
-    print("Entra en asyncio, run")
+def setImagenes(files, idU):    
     if platform.system() == 'Windows':
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(add_img_recibe(files, idU))
@@ -63,3 +66,4 @@ def obtenerURL(id):
     finally:
             conexion.close()
     return imagenes
+    

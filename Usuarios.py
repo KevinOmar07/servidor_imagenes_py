@@ -7,7 +7,9 @@ DB = "bxwuncwod1yxvwwned5s"
 userDB = "ujo5pftfpvqiwoqw"
 passDB = "OTNfrdZFDJEVuHqeGajm"
 
-def signIn(user, password):
+def signIn(data):
+    user = data['data']['user']
+    password = data['data']['password']
     try:
         res = realizarConsulta("SELECT nombre, contrasena, idUser FROM usuarios where nombre=%s;", user)              
         if (len(res[1]) > 0):
@@ -19,11 +21,11 @@ def signIn(user, password):
             estado = {"status": 'Error de inicio', "id": ""}           
     finally:
             res[0].close()             
-
     return estado
 
-def signUp(user, password):
-    print("Sign Up")
+def signUp(data):
+    user = data['data']['user']
+    password = data['data']['password']    
     res = realizarConsulta("SELECT nombre FROM usuarios where nombre=%s;", user)
 
     if(len(res[1])==0):
