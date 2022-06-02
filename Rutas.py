@@ -3,8 +3,8 @@ from flask_cors import CORS, cross_origin
 import json
 import threading
 
-import Usuarios
-import  Imagenes
+import Servicios.Usuarios as Usuarios
+import Servicios.Imagenes as Imagenes
 
 
 app = Flask(__name__)
