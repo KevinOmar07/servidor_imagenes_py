@@ -1,6 +1,6 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 
-import conexionBD
+import Conexiones.conexionBD as conexionBD
 
 def signIn(data):
     user = data['data']['user']

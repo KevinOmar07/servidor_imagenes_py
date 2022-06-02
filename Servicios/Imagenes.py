@@ -6,11 +6,11 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from flask import Flask
 
-import conexionBD
-import CloudDinary
+import Conexiones.conexionBD as conexionBD
+import Conexiones.CloudDinary as CloudDinary
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = "servidor_imagenes_py\images"
+app.config['UPLOAD_FOLDER'] = "..\servidor_imagenes_py\images"
 
 cloudinary = CloudDinary.cloudinary
 
@@ -22,9 +22,9 @@ async def add_img_bd(files, idUser):
             for file in files:  
                 filename = str(datetime.today().strftime('%Y %H_%M_%S_')) + secure_filename(file.filename)
                 file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-                res = cloudinary.uploader.upload("servidor_imagenes_py\images/" + filename)
+                res = cloudinary.uploader.upload("..\servidor_imagenes_py\images/" + filename)
                 cursor.execute(consulta, (filename, res['url'], idUser))                
-                remove("servidor_imagenes_py\images/" + filename)                                
+                remove("..\servidor_imagenes_py\images/" + filename)                                
             conexion.commit()
     finally:        
         conexion.close()
